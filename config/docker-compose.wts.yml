@@ -1,0 +1,36 @@
+# version: '3'
+
+services:
+  watashiga-nginx:
+    container_name: watashiga-cloud-nginx
+    image: nduythan/logknot-nginx:latest
+    depends_on:
+      - watashiga-app
+    ports:
+      - 80:80
+    volumes:
+      - ../../watashiga-cloud:/src
+      - ../wts/nginx:/etc/nginx/conf.d
+    networks:
+      - db_network
+    platform: linux/amd64
+      
+  watashiga-app:
+    container_name: watashiga-cloud-app
+    image: nduythan/logknot-app:7.3-watashiga
+    environment:
+      DB_HOST: logknot-mysql
+    # depends_on:
+    #   - logknot-mysql
+    volumes:
+      - ../../watashiga-cloud:/src
+      - ../wts/php/php.ini:/usr/local/etc/php/php.ini
+      - ../wts/php/worker.conf:/etc/supervisor/conf.d/worker.conf
+    # command: rm composer.lock && composer install --ignore-platform-reqs
+    networks:
+      - db_network
+    platform: linux/amd64
+
+networks:
+  db_network:
+    external: true

@@ -1,0 +1,68 @@
+# version: '3'
+
+services:
+  log-mansion-nginx:
+    container_name: logmansion-app-nginx
+    image: nduythan/logknot-nginx:latest
+    depends_on:
+      - log-mansion-app
+    ports:
+      - 81:80
+    volumes:
+      - ../../logmansion-app:/src
+      - ../lms/nginx:/etc/nginx/conf.d
+    networks:
+      - db_network
+    platform: linux/amd64
+      
+  log-mansion-app:
+    container_name: logmansion-app-app
+    image: nduythan/logknot-app:8.2
+    environment:
+      DB_HOST: logknot-mysql
+    # depends_on:
+    #   - logknot-mysql
+    volumes:
+      - ../../logmansion-app:/src
+      - ../lms/php/php.ini:/usr/local/etc/php/php.ini
+      - ../lms/php/laravel-worker.conf:/etc/supervisor/conf.d/laravel-worker.conf
+    networks:
+      - db_network
+    platform: linux/amd64
+
+networks:
+  db_network:
+    external: true
+  # log-mansion-mysql:
+  #   image: mysql:8.0
+  #   container_name: log-mansion-mysql
+  #   command: --default-authentication-plugin=mysql_native_password
+  #   env_file:
+  #     - ../.env
+  #   volumes:
+  #     - ./lms/mysql:/var/lib/mysql
+  #     - ./lms/mysqllogs:/var/log/mysql
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=root
+  #     - MYSQL_DATABASE=${DB_DATABASE}
+  #     - MYSQL_USER= ${DB_USERNAME}
+  #     - MYSQL_PASSWORD=${DB_PASSWORD}
+  #     - MYSQL_ALLOW_EMPTY_PASSWORD=1
+  #     - TZ=Asia/Tokyo
+  #   ports:
+  #     - 3306:3306
+
+
+  # log-mansion-phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin
+  #   container_name: log-mansion-pma
+  #   links:
+  #     - log-mansion-mysql
+  #   environment:
+  #     PMA_HOST:  log-mansion-mysql
+  #     MYSQL_ROOT_PASSWORD : root
+  #     PMA_ARBITRARY: 1
+  #     UPLOAD_LIMIT: 300M
+  #   restart: always
+  #   ports:
+  #     - 8081:80

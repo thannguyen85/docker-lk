@@ -1,0 +1,67 @@
+# version: '3'
+services:
+  ps-download-nginx:
+    container_name: ps-downloader-nginx
+    image: nduythan/logknot-nginx:latest
+    depends_on:
+      - ps-download-app
+    ports:
+      - 82:80
+    volumes:
+      - ../../ps-downloader/src:/src
+      - ../psd/nginx:/etc/nginx/conf.d
+    networks:
+      - db_network
+    platform: linux/amd64
+
+  ps-download-app:
+    container_name: ps-downloader-app
+    image: nduythan/logknot-app:8.2
+    environment:
+      DB_HOST: logknot-mysql
+    # depends_on:
+    #   - ps-download-mysql
+    volumes:
+      - ../../ps-downloader/src:/src
+      - ../psd/php/php.ini:/usr/local/etc/php/php.ini
+      - ../psd/php/laravel-worker.conf:/etc/supervisor/conf.d/laravel-worker.conf
+    networks:
+      - db_network
+    platform: linux/amd64
+
+networks:
+  db_network:
+    external: true
+  # ps-download-mysql:
+  #   image: mysql:8.0
+  #   container_name: ps-download-mysql
+  #   command: --default-authentication-plugin=mysql_native_password
+  #   env_file:
+  #     - ../.env
+  #   volumes:
+  #     - ./mysql:/var/lib/mysql
+  #     - ./mysqllogs:/var/log/mysql
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=root
+  #     - MYSQL_DATABASE=${DB_DATABASE}
+  #     - MYSQL_USER= ${DB_USERNAME}
+  #     - MYSQL_PASSWORD=${DB_PASSWORD}
+  #     - MYSQL_ALLOW_EMPTY_PASSWORD=1
+  #     - TZ=Asia/Tokyo
+  #   ports:
+  #     - 3306:3306
+
+
+  # ps-download-phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin
+  #   container_name: ps-download-pma
+  #   links:
+  #     - ps-download-mysql
+  #   environment:
+  #     PMA_HOST:  ps-download-mysql
+  #     MYSQL_ROOT_PASSWORD : root
+  #     PMA_ARBITRARY: 1
+  #     UPLOAD_LIMIT: 300M
+  #   restart: always
+  #   ports:
+  #     - 8081:80

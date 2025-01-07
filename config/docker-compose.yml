@@ -1,0 +1,46 @@
+# version: '3.8'
+
+networks:
+  db_network:
+    external: true
+
+services:
+  logknot-mysql:
+    image: mysql:8.0
+    container_name: logknot-mysql
+    command: --default-authentication-plugin=mysql_native_password
+    env_file:
+      - "../envs/.env"
+    volumes:
+      - ../mysql:/var/lib/mysql
+      - ../mysqllogs:/var/log/mysql
+      - ../db:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      # - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER= ${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - TZ=Asia/Tokyo
+    ports:
+      - 3306:3306
+    networks:
+      - db_network
+    platform: linux/amd64
+
+  logknot-pma:
+    image: phpmyadmin/phpmyadmin
+    container_name: logknot-pma
+    links:
+      - logknot-mysql
+    environment:
+      PMA_HOST:  logknot-mysql
+      MYSQL_ROOT_PASSWORD : root
+      PMA_ARBITRARY: 1
+      UPLOAD_LIMIT: 300M
+    restart: always
+    ports:
+      - 8081:80
+    networks:
+      - db_network
+    platform: linux/amd64
