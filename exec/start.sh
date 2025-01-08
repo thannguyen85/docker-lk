@@ -34,13 +34,6 @@ run_project() {
     #   echo "Storage directory does not exist in $project_dir."
     # fi
 
-    if [[ "$project_dir" == *"watashiga-cloud"* ]]; then
-      echo "Running npm install and npm run dev for watashiga-cloud..."
-      cd "$project_dir"
-      export NODE_OPTIONS=--openssl-legacy-provider
-      npm install && npm run dev
-      cd - > /dev/null
-    fi
     run_composer_install "$project_dir"
   else
     echo "Directory $project_dir does not exist."
@@ -66,8 +59,25 @@ run_composer_install() {
     # Add /src to Git's list of safe directories
   docker exec -i $container_name git config --global --add safe.directory /src
 
+  # docker exec -i $container_name npm install semver
+  # docker exec -i $container_name  export NODE_OPTIONS=--openssl-legacy-provider && npm install && npm run dev
+  # # Run npm install and npm run dev inside the container
+  # # docker exec -w /src -i $container_name sh -c "export NODE_OPTIONS=--openssl-legacy-provider && npm install && npm run dev"
+  # echo "Running composer install in $container_name..."
+  # docker exec -i $container_name composer install
+
+  # Ensure semver module is installed
+  docker exec -w /src -i $container_name sh -c "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash && source ~/.bashrc"
+  
   echo "Running composer install in $container_name..."
-  docker exec -i $container_name composer install
+
+  docker exec -w /src -i $container_name sh -c ". ~/.nvm/nvm.sh && nvm install node && export NODE_OPTIONS=--openssl-legacy-provider && npm install && npm run dev"
+  #  nvm install node && export NODE_OPTIONS=--openssl-legacy-provider && npm install && npm run dev"
+  # docker exec -w /src -i $container_name npm install semver
+  # Run npm install and npm run dev inside the container
+  # docker exec -w /src -i $container_name sh -c "export NODE_OPTIONS=--openssl-legacy-provider && npm install && npm run dev"
+  echo "Running composer install in $container_name..."
+  docker exec -w /src -i $container_name composer install
 }
 
 
@@ -94,6 +104,8 @@ while true; do
       break
       ;;
     2)
+      # echo "Stopping and deleting Watashiga containers..."
+      # docker-compose -f ../config/docker-compose.wts.yml down
       echo "Running Watashiga Cloud..."
       run_project "../../watashiga-cloud" "../envs/.env.wts" "../config/docker-compose.wts.yml"
       break
