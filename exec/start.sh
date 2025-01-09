@@ -58,7 +58,6 @@ run_composer_install() {
   fi
     # Add /src to Git's list of safe directories
   docker exec -i $container_name git config --global --add safe.directory /src
-
   # docker exec -i $container_name npm install semver
   # docker exec -i $container_name  export NODE_OPTIONS=--openssl-legacy-provider && npm install && npm run dev
   # # Run npm install and npm run dev inside the container
@@ -66,18 +65,27 @@ run_composer_install() {
   # echo "Running composer install in $container_name..."
   # docker exec -i $container_name composer install
 
-  # Ensure semver module is installed
-  docker exec -w /src -i $container_name sh -c "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash && source ~/.bashrc"
-  
-  echo "Running composer install in $container_name..."
+  if [[ "$project_dir" == *"watashiga-cloud"* ]]; then
+    echo " Innstall nvm, npm module is installed for ps-downloader..."
+    # Ensure nvm module is installed
+    docker exec -w /src -i $container_name sh -c "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash && source ~/.bashrc"
 
-  docker exec -w /src -i $container_name sh -c ". ~/.nvm/nvm.sh && nvm install node && export NODE_OPTIONS=--openssl-legacy-provider && npm install && npm run dev"
+    echo "Running composer install in $container_name..."
+
+    docker exec -w /src -i $container_name sh -c ". ~/.nvm/nvm.sh && nvm install node && export NODE_OPTIONS=--openssl-legacy-provider && npm install && npm run dev"
+  fi
+
   #  nvm install node && export NODE_OPTIONS=--openssl-legacy-provider && npm install && npm run dev"
   # docker exec -w /src -i $container_name npm install semver
   # Run npm install and npm run dev inside the container
   # docker exec -w /src -i $container_name sh -c "export NODE_OPTIONS=--openssl-legacy-provider && npm install && npm run dev"
   echo "Running composer install in $container_name..."
   docker exec -w /src -i $container_name composer install
+
+  if [[ "$project_dir" == *"logmansion-app"* ]]; then
+      echo "Generate secret Jwt key for ps-downloader..."
+      docker exec -w /src -i $container_name php artisan jwt:secret
+  fi
 }
 
 
