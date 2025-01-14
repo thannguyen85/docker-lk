@@ -10,7 +10,8 @@ show_menu() {
   echo "5) Build All Projects (Watashiga Cloud, Log Mansion, PS Download)"
   echo "6) Update Database from Staging Repository"
   echo "7) Clone source code from remote repository"
-  echo "8) Exit and Leave"
+  echo "8) Stop & Detroy "
+  echo "9) Exit and Leave"
 }
 
 # Function to run a project
@@ -98,7 +99,7 @@ fi
 # Display menu and handle user input
 while true; do
   show_menu
-  read -p "Enter your choice [1-8]: " choice
+  read -p "Enter your choice [1-9]: " choice
 
   case $choice in
     1)
@@ -155,6 +156,10 @@ while true; do
       break 
       ;;  
    8)
+      bash ./detroy.sh
+      exit 0
+      ;;
+   9)
       echo "Exiting."
       exit 0
       ;;
