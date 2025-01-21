@@ -2,7 +2,7 @@
 
 
 # Variables
-REPO_URL="https://github.com/thannguyen123/logknotdb.git"
+REPO_URL="git@github.com:thannguyen85/logknotdb.git"
 CLONE_DIR="/tmp/repository"
 
 # Check if the directory exists and delete it if it does
