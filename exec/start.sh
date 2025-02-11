@@ -34,7 +34,7 @@ run_project() {
     # else
     #   echo "Storage directory does not exist in $project_dir."
     # fi
-
+  
     run_composer_install "$project_dir"
   else
     echo "Directory $project_dir does not exist."
@@ -82,6 +82,10 @@ run_composer_install() {
   # docker exec -w /src -i $container_name sh -c "export NODE_OPTIONS=--openssl-legacy-provider && npm install && npm run dev"
   echo "Running composer install in $container_name..."
   docker exec -w /src -i $container_name composer install
+
+  echo "Set permission to storage directory..."
+  docker exec -w /src -i $container_name chmod -Rf 777 storage
+ 
 
   if [[ "$project_dir" == *"logmansion-app"* ]]; then
       echo "Generate secret Jwt key for ps-downloader..."
