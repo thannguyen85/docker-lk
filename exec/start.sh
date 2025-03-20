@@ -10,8 +10,9 @@ show_menu() {
   echo "5) Build All Projects (Watashiga Cloud, Log Mansion, PS Download)"
   echo "6) Update Database from Staging Repository"
   echo "7) Clone source code from remote repository"
-  echo "8) Stop & Detroy "
-  echo "9) Exit and Leave"
+  echo "8) Stop & Detroy"
+  echo "9) Build WordPress"
+  echo "10) Exit and Leave"
 }
 
 # Function to run a project
@@ -163,7 +164,14 @@ while true; do
       bash ./detroy.sh
       exit 0
       ;;
-   9)
+   9)  
+      echo "Running WordPress..."
+      # docker network create db_network
+      docker-compose -f ../config/docker-compose.wp.yml up -d
+      # run_project "../../wp" "../envs/.env.lms" "../config/docker-compose.wp.yml"
+      break
+      ;;
+   10)
       echo "Exiting."
       exit 0
       ;;

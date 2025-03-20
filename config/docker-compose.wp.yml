@@ -1,0 +1,25 @@
+version: '3.8'
+
+
+
+services:
+  wordpress:
+    container_name: wordpress
+    build: ./wp
+    ports:
+      - "83:80"
+    environment:
+      WORDPRESS_DB_HOST: logknot-mysql
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: root
+      WORDPRESS_DB_NAME: wpdb
+    volumes:
+      - ../../wp:/var/www/html
+    platform: linux/amd64
+    networks:
+      - db_network
+#wp-user
+#eOuKb1O00g(NjENrV3
+networks:
+  db_network:
+    external: true

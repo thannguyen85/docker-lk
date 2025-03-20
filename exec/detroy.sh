@@ -7,9 +7,10 @@ show_menu() {
   echo "2) Delete Watashiga Cloud"
   echo "3) Delete Log Mansion"
   echo "4) Delete PS Download"
-  echo "5) Delete All Containers"
-  echo "6) Delete All Containers, Volumes, Images"
-  echo "7) Exit"
+  echo "5) Delete Wordpress"
+  echo "6) Delete All Containers"
+  echo "7) Delete All Containers, Volumes, Images"
+  echo "8) Exit"
 }
 
 # Display menu and handle user input
@@ -39,17 +40,22 @@ while true; do
       break
       ;;
     5)
+      echo "Stopping and deleting Wordpress containers..."
+      docker-compose -f ../config/docker-compose.wp.yml  down 
+      break
+      ;;  
+    6)
       echo "Stopping and deleting All containers..."
       docker-compose -f ../config/docker-compose.yml --env-file ../envs/.env down  --remove-orphans --volumes
       break
       ;;
-    6)
+    7)
       echo "Stopping and deleting All containers, volume, image..."
       docker-compose -f ../config/docker-compose.yml --env-file ../envs/.env down  --remove-orphans --volumes
       echo "y" | docker system prune -a
       break
       ;;  
-    7)
+    8)
       echo "Exiting."
       exit 0
       ;;
